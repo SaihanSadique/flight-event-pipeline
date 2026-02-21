@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+*.egg
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Jupyter / Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/profiles.yml        # contains credentials — never commit
+
+# Kafka / Docker
+kafka/data/
+
+# OpenSky snapshot (may contain real flight data)
+generator/opensky_snapshot.json
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
