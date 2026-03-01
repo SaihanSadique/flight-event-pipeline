@@ -12,7 +12,7 @@ Usage:
     python flight_event_generator.py --mode synthetic  # pure simulation
     python flight_event_generator.py --mode snapshot   # fetch OpenSky and save to JSON
 """
-
+import os
 import argparse
 import json
 import logging
@@ -24,7 +24,10 @@ from typing import Optional
 
 import requests
 from confluent_kafka import Producer
-    
+
+from dotenv import load_dotenv
+load_dotenv()   # Import credentials required ot connect to MS Fabric eventstream
+
 # Logging
 
 logging.basicConfig(
@@ -36,8 +39,8 @@ log = logging.getLogger(__name__)
 
 # Constants
 
-KAFKA_BOOTSTRAP = "localhost:9092"
-KAFKA_TOPIC = "flight-events"
+KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "localhost:9092")
+KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "flight-events")
 OPENSKY_URL = "https://opensky-network.org/api/states/all"
 
 # Realistic airline codes + IATA airport pairs (Emirates region focus)
@@ -184,7 +187,13 @@ def enrich_to_event(flight: dict) -> dict:
 
 # ── Kafka Producer ────────────────────────────────────────────────────────────
 def create_producer():
-    return Producer({'bootstrap.servers': KAFKA_BOOTSTRAP})
+    return Producer({
+        'bootstrap.servers': KAFKA_BOOTSTRAP,
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanism': 'PLAIN',
+        'sasl.username': '$ConnectionString',
+        'sasl.password': os.getenv("KAFKA_PASSWORD", ""),
+    })
 
 
 def stream_events(flights: list[dict], interval_sec: float = 1.0,
@@ -249,7 +258,8 @@ def main():
             flights = build_synthetic_flights()
     else:
         flights = build_synthetic_flights()
-
+    print("BOOTSTRAP:", os.getenv("KAFKA_BOOTSTRAP"))
+    print("TOPIC:", os.getenv("KAFKA_TOPIC"))
     stream_events(flights, interval_sec=args.interval, max_events=args.max_events)
 
 
