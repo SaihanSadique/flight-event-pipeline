@@ -1,5 +1,5 @@
 WITH source AS (
-    SELECT * FROM read_csv_auto('C:/Users/saiha/OneDrive/Documents/Projects/flight-event-pipeline/data/silver_flight_events.csv')
+    SELECT * FROM read_csv_auto('seeds/silver_flight_events.csv')
 )
 
 SELECT
