@@ -1,0 +1,59 @@
+name: Flight Pipeline — CI Validation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt-tests:
+    name: dbt Model & Data Quality Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-core dbt-duckdb
+
+      - name: Copy profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cp flight_pipeline/profiles.yml ~/.dbt/profiles.yml
+
+      - name: Run dbt models
+        run: |
+          cd flight_pipeline
+          dbt run
+
+      - name: Run dbt tests
+        run: |
+          cd flight_pipeline
+          dbt test
+
+  python-tests:
+    name: Generator Schema Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+
+      - name: Run tests
+        run: pytest tests/ -v
