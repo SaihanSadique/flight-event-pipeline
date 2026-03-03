@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: stg_flight_events
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: airline_code
+        tests:
+          - not_null
+      - name: event_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['FLIGHT_DEPARTED', 'FLIGHT_EN_ROUTE', 'FLIGHT_LANDED', 'FLIGHT_DELAYED', 'FLIGHT_CANCELLED']
+      - name: delay_minutes
+        tests:
+          - not_null
+
+  - name: gold_airline_otp
+    columns:
+      - name: airline_code
+        tests:
+          - not_null
+          - unique
+      - name: otp_pct
+        tests:
+          - not_null
+
+  - name: gold_route_performance
+    columns:
+      - name: route
+        tests:
+          - not_null
+          - unique
