@@ -1,0 +1,7 @@
+flight_pipeline:
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      threads: 4
+  target: dev
